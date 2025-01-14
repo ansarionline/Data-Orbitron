@@ -65,7 +65,7 @@ def register_panel(app, button_id, target_id):
 def make_panel(app,fig):
     return dbc.Col([
         dbc.InputGroup([
-            html.Img(src='/assets/favicon.ico',style={'width':'50px','height':'50px'}),
+            html.Img(src='favicon.ico',style={'width':'50px','height':'50px'}),
             dbc.Label('Data Orbitron',style={'font-family':'Arial',
                                             'font-weight':'bold',
                                             'font-size':'35px',
