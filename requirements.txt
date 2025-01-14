@@ -5,3 +5,4 @@ dash_resizable_panels
 flask
 gunicorn
 dash_ace
+pandas
