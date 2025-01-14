@@ -1,6 +1,7 @@
 dash
 dash_bootstrap_components
-gunicorn
 plotly
-pandas
+dash_resizable_panels
 flask
+gunicorn
+dash_ace
