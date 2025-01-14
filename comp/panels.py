@@ -1,41 +1,90 @@
 import dash_bootstrap_components as dbc
-from dash import Output,Input,html
-from comp import axis, figure, settings, subplot
+from dash import Output,Input,html,State
+from comp import axis, figure, subplot, data, layout
 options=[     
-{'label': 'Subplots', 'value': 'subplots'},
-{'label': 'Axis', 'value': 'axis'},
-{'label': 'Figure', 'value': 'figure'},
-{'label': 'Settings', 'value': 'settings'}
+    {'label': 'Subplots', 'value': 'subplots'},
+    {'label': 'Axis', 'value': 'axis'},
+    {'label': 'Figure', 'value': 'figure'},
+    {'label': 'Settings', 'value': 'settings'}
 ]
-def make_panel(fig):
-    return dbc.Row([
-        dbc.Col([
-            dbc.InputGroup([html.Img(src='assets/favicon.ico',
-                style={"width": "50px", "height": "50px"}),
-                dbc.Select(
-                id='panel-select',
-                options=options,
-                value='subplots',  
-                name="Editing Mode"
-            )]),
-        ])
-    ])
-    
-def register_panels_callbacks(app,fig,update_session,go):
-    axis.register_axis_callbacks(app,fig)
-    subplot.register_subplots(app,fig,go)
+def add_headings(text='Heading',style={
+    'margin':'10px',
+    'backgroundColor':'#1a73e8',
+    'border-wdith':'2px',
+    'border-radius':'10px',
+    'width':'95%',
+    'font-family':'Arial',
+    'font-weight':'bold',
+    'font-size':'15px',
+    'text-align':'center',
+    'color':'white'
+}):
+    return dbc.Button(f'{text.title()}',id=f'{text.lower()}-button',style=style)
+
+def register_panel(app, button_id, target_id):
     @app.callback(
-    Output('panel-content', 'children',allow_duplicate=True),
-    Input('panel-select', 'value')
+        [Output(target_id, "style"), Output(button_id, "style")],
+        [Input(button_id, "n_clicks")],
+        [State(target_id, "style")],
     )
-    def update_panel_content(selected_value):
-        update_session()
-        if selected_value == 'axis':
-            return axis.make_axis(fig)
-        elif selected_value == 'figure':
-            return figure.make_fig(fig)
-        elif selected_value == 'settings':
-            return settings.make_settings(fig)
-        elif selected_value == 'subplots':
-            return subplot.make_subplots_panel(fig)
-        return html.Div("Select an option from the dropdown")
+    def toggle_panel(n_clicks, current_style):
+        # Default styles
+        container_hidden = {"display": "none"}
+        container_visible = {"display": "block"}
+        
+        button_hidden_style = {
+    'margin':'10px',
+    'backgroundColor':'darkblue',
+    'border-wdith':'2px',
+    'border-radius':'10px',
+    'width':'95%',
+    'font-family':'Arial',
+    'font-weight':'bold',
+    'font-size':'15px',
+    'text-align':'center',
+    'color':'white'
+}
+        button_visible_style = {
+    'margin':'10px',
+    'backgroundColor':'#1a73e8',
+    'border-wdith':'2px',
+    'border-radius':'10px',
+    'width':'95%',
+    'font-family':'Arial',
+    'font-weight':'bold',
+    'font-size':'15px',
+    'text-align':'center',
+    'color':'white'
+}
+        if n_clicks and current_style["display"] == "none":
+            return container_visible, button_visible_style 
+        return container_hidden, button_hidden_style  
+
+
+
+def make_panel(app,fig):
+    return dbc.Col([
+        dbc.InputGroup([
+            html.Img(src='/assets/favicon.ico',style={'width':'50px','height':'50px'}),
+            dbc.Label('Data Orbitron',style={'font-family':'Arial',
+                                            'font-weight':'bold',
+                                            'font-size':'35px',
+                                            'margin-left':'10px'}
+                    )
+        ]),
+        add_headings('Data'),
+        data.make_data(app,fig),
+        add_headings('Subplots'),
+        subplot.make_subplots_panel(app, fig),
+        add_headings('Axis'),
+        axis.make_axis(app, fig),
+        add_headings('Figure'),
+        figure.make_fig(fig),
+        add_headings('Dict'),
+        layout.make_layout(fig)
+        ],style={
+                    "height": "98vh",
+                    "overflowY": "scroll",
+                    'overflowX': 'hidden',
+                    'margin':'5px'
+                })
