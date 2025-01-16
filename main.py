@@ -1,7 +1,6 @@
 import dash
 from dash import Output, Input, State, html, dcc
 import dash_bootstrap_components as dbc
-from dash_breakpoints import WindowBreakpoints
 import plotly.subplots as ps
 import plotly.graph_objects as go
 from dash_resizable_panels import PanelGroup, Panel, PanelResizeHandle
