@@ -6,3 +6,4 @@ flask
 gunicorn
 dash_ace
 pandas
+dash_breakpoints
